@@ -1,5 +1,6 @@
 package com.reon.recipeapp.dto.recipe;
 
+import com.reon.recipeapp.validators.CreateRecipeValidator;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -16,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateRecipe {
     @NotBlank(
-            message = "Recipe title of required."
+            message = "Recipe title of required.",
+            groups = CreateRecipeValidator.class
     )
     private String title;
 

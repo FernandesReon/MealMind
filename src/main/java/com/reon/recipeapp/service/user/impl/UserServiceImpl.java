@@ -12,6 +12,9 @@ import com.reon.recipeapp.repository.UserRepository;
 import com.reon.recipeapp.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "userCache", key = "'userInfo'")
     public UserResponseDTO registerUser(UserRegisterDTO registerDTO) {
         if (userRepository.existsByEmail(registerDTO.getEmail())){
             throw new EmailAlreadyExistsException("A user with this email already exists: " + registerDTO.getEmail());
@@ -53,6 +57,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(
+            put = @CachePut(value = "users", key = "#id"),
+            evict = @CacheEvict(value = "userCache", key = "'userInfo'")
+    )
     public UserResponseDTO updateUser(String id, UserRegisterDTO updateDTO) {
         logger.info("Service :: Updating an user with id: " + id);
         User exisitingUser = userRepository.findById(id).orElseThrow(
@@ -72,6 +80,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "users", key = "#id"),
+                    @CacheEvict(value = "userCache", key = "'userInfo'")
+            }
+    )
     public void deleteUser(String id) {
         logger.warn("Deleting user with id: " + id);
         userRepository.deleteById(id);

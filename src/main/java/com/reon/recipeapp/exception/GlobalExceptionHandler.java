@@ -1,5 +1,7 @@
 package com.reon.recipeapp.exception;
 
+import com.reon.recipeapp.exception.recipe.RecipeNotFoundException;
+import com.reon.recipeapp.exception.recipe.TitleAlreadyExistsException;
 import com.reon.recipeapp.exception.user.EmailAlreadyExistsException;
 import com.reon.recipeapp.exception.user.UserNameAlreadyExistsException;
 import com.reon.recipeapp.exception.user.UserNotFoundException;
@@ -58,6 +60,22 @@ public class GlobalExceptionHandler {
         logger.warn("Restriction Exception: {}", restrict.getMessage());
         Map<String, String> error = new HashMap<>();
         error.put("message", "This operations is restricted due to security reasons.");
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(TitleAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleTitleExisting(TitleAlreadyExistsException existsException){
+        logger.warn("Title already exists: {}", existsException.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("message", "Title already exists. Try a new one.");
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(RecipeNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleRecipeNotFound(RecipeNotFoundException recipeNotFoundException){
+        logger.warn("Recipe Exception: {}", recipeNotFoundException.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("message", "Recipe not found.");
         return ResponseEntity.badRequest().body(error);
     }
 }

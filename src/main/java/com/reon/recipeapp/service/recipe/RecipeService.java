@@ -8,4 +8,6 @@ import java.util.List;
 public interface RecipeService {
     ViewRecipe createRecipe(CreateRecipe createRecipe);
     List<ViewRecipe> getAllRecipes();
+    ViewRecipe updateRecipe(String id, CreateRecipe updateRecipe);
+    void deleteRecipe(String id);
 }
