@@ -1,5 +1,6 @@
 package com.reon.recipeapp.service.user;
 
+import com.reon.recipeapp.dto.user.UserRegisterDTO;
 import com.reon.recipeapp.dto.user.UserResponseDTO;
 import com.reon.recipeapp.model.Role;
 
@@ -11,4 +12,7 @@ public interface AdminService {
     UserResponseDTO fetchByEmail(String email);
     UserResponseDTO fetchByUsername(String username);
     UserResponseDTO updateUserRole(String id, Role role);
+
+    // Add multiple users at once
+    List<UserResponseDTO> multiRegistration(List<UserRegisterDTO> registerDTOS);
 }

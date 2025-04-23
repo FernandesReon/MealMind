@@ -1,13 +1,16 @@
 package com.reon.recipeapp.service.recipe.impl;
 
 import com.reon.recipeapp.dto.recipe.CreateRecipe;
+import com.reon.recipeapp.dto.recipe.RecipeEventDTO;
 import com.reon.recipeapp.dto.recipe.ViewRecipe;
 import com.reon.recipeapp.exception.recipe.RecipeNotFoundException;
 import com.reon.recipeapp.exception.recipe.TitleAlreadyExistsException;
+import com.reon.recipeapp.mapper.EventMapper;
 import com.reon.recipeapp.mapper.RecipeMapper;
 import com.reon.recipeapp.model.Recipe;
 import com.reon.recipeapp.model.User;
 import com.reon.recipeapp.repository.RecipeRepository;
+import com.reon.recipeapp.service.kafka.impl.KafkaProducerServiceImpl;
 import com.reon.recipeapp.service.recipe.RecipeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +31,11 @@ import java.util.stream.Collectors;
 public class RecipeServiceImpl implements RecipeService {
     private final Logger logger = LoggerFactory.getLogger(RecipeServiceImpl.class);
     private final RecipeRepository recipeRepository;
+    private final KafkaProducerServiceImpl kafkaProducerService;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, KafkaProducerServiceImpl kafkaProducerService) {
         this.recipeRepository = recipeRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
@@ -59,6 +64,11 @@ public class RecipeServiceImpl implements RecipeService {
 
         Recipe saveRecipe = recipeRepository.save(recipe);
         logger.info("Recipe saved with ID: {}", saveRecipe.getId());
+
+        // Publish recipe created event using EventMapper
+        RecipeEventDTO recipeEvent = EventMapper.toRecipeEventDTO(saveRecipe);
+        kafkaProducerService.sendRecipeCreatedEvent(recipeEvent);
+
         return RecipeMapper.recipeResponse(saveRecipe);
     }
 
