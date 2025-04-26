@@ -1,14 +1,17 @@
 package com.reon.recipeapp.service.user.impl;
 
+import com.reon.recipeapp.dto.user.UserEventDTO;
 import com.reon.recipeapp.dto.user.UserRegisterDTO;
 import com.reon.recipeapp.dto.user.UserResponseDTO;
 import com.reon.recipeapp.exception.user.EmailAlreadyExistsException;
 import com.reon.recipeapp.exception.user.UserNameAlreadyExistsException;
 import com.reon.recipeapp.exception.user.UserNotFoundException;
+import com.reon.recipeapp.mapper.EventMapper;
 import com.reon.recipeapp.mapper.UserMapper;
 import com.reon.recipeapp.model.Role;
 import com.reon.recipeapp.model.User;
 import com.reon.recipeapp.repository.UserRepository;
+import com.reon.recipeapp.service.kafka.impl.KafkaProducerServiceImpl;
 import com.reon.recipeapp.service.user.AdminService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +26,13 @@ public class AdminServiceImpl implements AdminService {
     private static final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaProducerServiceImpl kafkaProducerService;
 
-    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                            KafkaProducerServiceImpl kafkaProducerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
@@ -130,6 +136,9 @@ public class AdminServiceImpl implements AdminService {
             logger.info("User saved with id: {}", id);
 
             savedUsers.add(UserMapper.responseToUser(savedUser));
+
+            UserEventDTO userCreatedEvent = EventMapper.toUserEventDTO(savedUser);
+            kafkaProducerService.sendUserCreatedEvent(userCreatedEvent);
         }
 
         logger.info("Successfully registered {} users", savedUsers.size());

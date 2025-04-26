@@ -7,7 +7,9 @@ import com.reon.recipeapp.exception.user.UserNameAlreadyExistsException;
 import com.reon.recipeapp.exception.user.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,11 +48,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(
             UserNotFoundException userNotFoundException
-    ){
+    ) {
         logger.warn("User Exception: {}", userNotFoundException.getMessage());
         Map<String, String> error = new HashMap<>();
-        error.put("message", "User not found");
-        return ResponseEntity.badRequest().body(error);
+        error.put("message", "Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error); // 401
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleBadCredentialsException(
+            BadCredentialsException badCredentialsException
+    ) {
+        logger.warn("Bad Credentials Exception: {}", badCredentialsException.getMessage());
+        Map<String, String> error = new HashMap<>();
+        error.put("message", "Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(RestrictionException.class)
