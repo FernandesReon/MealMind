@@ -1,5 +1,6 @@
 package com.reon.recipeapp.controller.user;
 
+import com.reon.recipeapp.dto.user.LoginResponseDTO;
 import com.reon.recipeapp.dto.user.UserLoginDTO;
 import com.reon.recipeapp.dto.user.UserRegisterDTO;
 import com.reon.recipeapp.dto.user.UserResponseDTO;
@@ -18,13 +19,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin("*")
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserServiceImpl userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public UserController(UserServiceImpl userService, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public UserController(UserServiceImpl userService, JwtService jwtService,
+                          AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -55,16 +58,21 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginViaJwt(@RequestBody UserLoginDTO loginDTO){
+    public ResponseEntity<LoginResponseDTO> loginViaJwt(@RequestBody UserLoginDTO loginDTO) {
+        logger.info("Login attempt for email: {}", loginDTO.getEmail());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
-
-        if (authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return jwtService.generateToken(loginDTO.getEmail(), userDetails.getAuthorities());
+            // Generate JWT
+            String token = jwtService.generateToken(loginDTO.getEmail(), userDetails.getAuthorities());
+            // Fetch user details and map to UserResponseDTO
+            UserResponseDTO userResponse = userService.findByEmail(loginDTO.getEmail());
+            // Return token and user details
+            LoginResponseDTO response = new LoginResponseDTO(token, userResponse);
+            logger.info("Login successful for email: {}", loginDTO.getEmail());
+            return ResponseEntity.ok(response);
         }
-        else {
-            throw new UserNotFoundException("Invalid user request !");
-        }
+        throw new UserNotFoundException("Invalid email or password");
     }
 }

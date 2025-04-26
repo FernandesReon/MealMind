@@ -107,4 +107,12 @@ public class UserServiceImpl implements UserService {
         kafkaProducerService.sendUserDeletedEvent(id);
         userRepository.deleteById(id);
     }
+
+    @Override
+    public UserResponseDTO findByEmail(String email) {
+        logger.info("Fetching user with email: " + email);
+        User user = userRepository.findByEmail(email).
+                orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return UserMapper.responseToUser(user);
+    }
 }

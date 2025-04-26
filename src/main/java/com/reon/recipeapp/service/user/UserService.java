@@ -7,4 +7,5 @@ public interface UserService {
     UserResponseDTO registerUser(UserRegisterDTO registerDTO);
     UserResponseDTO updateUser(String id, UserRegisterDTO updateDTO);
     void deleteUser(String id);
+    UserResponseDTO findByEmail(String email);
 }
