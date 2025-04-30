@@ -127,4 +127,25 @@ public class RecipeServiceImpl implements RecipeService {
         logger.info("Service :: Deleting recipe with id: " + id);
         recipeRepository.deleteById(id);
     }
+
+    @Override
+    @Cacheable(value = "recipe", key = "#id")
+    public ViewRecipe getRecipeById(String id) {
+        logger.info("Service :: Fetching recipe with id: {}", id);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new SecurityException("User must be authenticated to view a recipe");
+        }
+
+        User authenticatedUser = (User) authentication.getPrincipal();
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeNotFoundException("Recipe with id: " + id + " not found!"));
+
+        if (!recipe.getUser().getId().equals(authenticatedUser.getId())) {
+            throw new SecurityException("User not authorized to view this recipe");
+        }
+
+        return RecipeMapper.recipeResponse(recipe);
+    }
 }

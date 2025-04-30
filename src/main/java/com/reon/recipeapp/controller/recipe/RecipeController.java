@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/recipe")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class RecipeController {
     private final Logger logger = LoggerFactory.getLogger(RecipeController.class);
     private final RecipeServiceImpl recipeService;
@@ -54,5 +55,12 @@ public class RecipeController {
     public ResponseEntity<List<ViewRecipe>> getAllRecipes(){
         List<ViewRecipe> allRecipes = recipeService.getAllRecipes();
         return ResponseEntity.ok().body(allRecipes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ViewRecipe> getRecipeById(@PathVariable String id) {
+        logger.info("Controller :: Fetching recipe with id: " + id);
+        ViewRecipe recipe = recipeService.getRecipeById(id);
+        return ResponseEntity.ok().body(recipe);
     }
 }

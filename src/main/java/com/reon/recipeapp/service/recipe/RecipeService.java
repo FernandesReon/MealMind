@@ -10,4 +10,5 @@ public interface RecipeService {
     List<ViewRecipe> getAllRecipes();
     ViewRecipe updateRecipe(String id, CreateRecipe updateRecipe);
     void deleteRecipe(String id);
+    ViewRecipe getRecipeById (String id);
 }
