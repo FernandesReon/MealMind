@@ -1,6 +1,5 @@
 package com.reon.recipeapp.dto.recipe;
 
-import com.reon.recipeapp.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +16,8 @@ public class ViewRecipe {
     private String title;
     private String description;
     private Integer servings;
+    private Integer prep_time;
+    private Integer cook_time;
     private String additional_notes;
     private List<String> ingredients;
     private List<String> instructions;

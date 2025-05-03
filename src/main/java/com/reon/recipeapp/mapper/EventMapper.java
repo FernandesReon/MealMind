@@ -29,6 +29,8 @@ public class EventMapper {
         recipeEvent.setTitle(recipe.getTitle());
         recipeEvent.setDescription(recipe.getDescription());
         recipeEvent.setServings(recipe.getServings());
+        recipeEvent.setPrep_time(recipe.getPrep_time());
+        recipeEvent.setCook_time(recipe.getCook_time());
         recipeEvent.setAdditionalNotes(recipe.getAdditional_notes());
         recipeEvent.setIngredients(recipe.getIngredients());
         recipeEvent.setInstructions(recipe.getInstructions());

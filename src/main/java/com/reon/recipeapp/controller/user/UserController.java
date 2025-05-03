@@ -75,4 +75,11 @@ public class UserController {
         }
         throw new UserNotFoundException("Invalid email or password");
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        userService.logoutUser();
+        logger.info("User logged out");
+        return ResponseEntity.ok("Logged out successfully");
+    }
 }

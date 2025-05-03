@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -114,5 +115,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email).
                 orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
         return UserMapper.responseToUser(user);
+    }
+
+    @Override
+    @CacheEvict(value = "recipeCache", key = "'recipeInfo'")
+    public void logoutUser() {
+        SecurityContextHolder.clearContext();
     }
 }

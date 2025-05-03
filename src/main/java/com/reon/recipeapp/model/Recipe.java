@@ -22,6 +22,8 @@ public class Recipe {
     private String title;
     private String description;
     private Integer servings;
+    private Integer prep_time;
+    private Integer cook_time;
     private String additional_notes;
 
     @ElementCollection(fetch = FetchType.EAGER)

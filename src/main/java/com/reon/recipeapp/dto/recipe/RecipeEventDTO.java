@@ -11,6 +11,8 @@ public class RecipeEventDTO {
     private String title;
     private String description;
     private Integer servings;
+    private Integer prep_time;
+    private Integer cook_time;
     private String additionalNotes;
     private List<String> ingredients;
     private List<String> instructions;

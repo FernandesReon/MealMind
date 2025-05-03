@@ -41,13 +41,12 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @CacheEvict(value = "recipeCache", key = "'recipeInfo'")
     public ViewRecipe createRecipe(CreateRecipe createRecipe) {
-
-        if (recipeRepository.existsByTitle(createRecipe.getTitle())){
+        if (recipeRepository.existsByTitle(createRecipe.getTitle())) {
             throw new TitleAlreadyExistsException("Recipe with the current title already exists.");
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()){
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("User must be authenticated to create a recipe");
         }
 
@@ -56,7 +55,6 @@ public class RecipeServiceImpl implements RecipeService {
                 createRecipe.getTitle(), authenticatedUser.getEmail());
 
         Recipe recipe = RecipeMapper.mapToRecipe(createRecipe);
-
         recipe.setId(UUID.randomUUID().toString());
         recipe.setUser(authenticatedUser);
         recipe.setCreatedOn(LocalDateTime.now());
@@ -65,7 +63,6 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe saveRecipe = recipeRepository.save(recipe);
         logger.info("Recipe saved with ID: {}", saveRecipe.getId());
 
-        // Publish recipe created event using EventMapper
         RecipeEventDTO recipeEvent = EventMapper.toRecipeEventDTO(saveRecipe);
         kafkaProducerService.sendRecipeCreatedEvent(recipeEvent);
 
@@ -76,15 +73,15 @@ public class RecipeServiceImpl implements RecipeService {
     @Cacheable(value = "recipeCache", key = "'recipeInfo'")
     public List<ViewRecipe> getAllRecipes() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()){
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("User must be authenticated to view recipes");
         }
         User authenticatedUser = (User) authentication.getPrincipal();
         logger.info("Service :: Fetching recipes for user: {}", authenticatedUser.getEmail());
 
-        List<Recipe> recipeList = recipeRepository.findByUserId(authenticatedUser.getId());
+        List<Recipe> recipeList = recipeRepository.findByUser_Id(authenticatedUser.getId());
         return recipeList.stream()
-                .map(RecipeMapper :: recipeResponse)
+                .map(RecipeMapper::recipeResponse)
                 .collect(Collectors.toList());
     }
 

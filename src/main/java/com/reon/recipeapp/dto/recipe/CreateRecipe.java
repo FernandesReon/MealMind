@@ -27,6 +27,8 @@ public class CreateRecipe {
     )
     private String description;
     private Integer servings;
+    private Integer prep_time;
+    private Integer cook_time;
     @Size(
             message = "Maximum 1000 characters allowed.", max = 1000
     )

@@ -8,4 +8,5 @@ public interface UserService {
     UserResponseDTO updateUser(String id, UserRegisterDTO updateDTO);
     void deleteUser(String id);
     UserResponseDTO findByEmail(String email);
+    void logoutUser();
 }

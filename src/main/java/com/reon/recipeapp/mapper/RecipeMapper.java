@@ -11,6 +11,8 @@ public class RecipeMapper {
         recipe.setTitle(newRecipe.getTitle());
         recipe.setDescription(newRecipe.getDescription());
         recipe.setServings(newRecipe.getServings());
+        recipe.setPrep_time(newRecipe.getPrep_time());
+        recipe.setCook_time(newRecipe.getCook_time());
         recipe.setAdditional_notes(newRecipe.getAdditional_notes());
         recipe.setIngredients(newRecipe.getIngredients());
         recipe.setInstructions(newRecipe.getInstructions());
@@ -24,6 +26,8 @@ public class RecipeMapper {
         viewRecipe.setTitle(recipe.getTitle());
         viewRecipe.setDescription(recipe.getDescription());
         viewRecipe.setServings(recipe.getServings());
+        viewRecipe.setPrep_time(recipe.getPrep_time());
+        viewRecipe.setCook_time(recipe.getCook_time());
         viewRecipe.setAdditional_notes(recipe.getAdditional_notes());
         viewRecipe.setIngredients(recipe.getIngredients());
         viewRecipe.setInstructions(recipe.getInstructions());
@@ -47,6 +51,12 @@ public class RecipeMapper {
         }
         if (update.getServings() != null) {
             recipe.setServings(update.getServings());
+        }
+        if (update.getPrep_time() != null) {
+            recipe.setPrep_time(update.getPrep_time());
+        }
+        if (update.getCook_time() != null) {
+            recipe.setCook_time(update.getCook_time());
         }
         if (update.getAdditional_notes() != null && !update.getAdditional_notes().isBlank()) {
             recipe.setAdditional_notes(update.getAdditional_notes());

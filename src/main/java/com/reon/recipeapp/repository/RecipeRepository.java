@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, String> {
+    List<Recipe> findByUser_Id(String userId);
     boolean existsByTitle(String title);
-    List<Recipe> findByUserId(String id);
 }
